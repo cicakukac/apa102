@@ -66,14 +66,21 @@ def sof():
 # Update colour and brightness values from pixels list
 # Call this procedure to update the display
 def show():
-    sof()
+    sof()  # Start frame
+
     for pixel in pixels:
         r, g, b, brightness = pixel
-        write_byte(0b11100000 | brightness)
-        write_byte(b)
-        write_byte(g)
-        write_byte(r)
-    eof()
+        write_byte(0b11100000 | brightness)  # Brightness header
+        write_byte(b)  # Send Blue
+        write_byte(g)  # Send Green
+        write_byte(r)  # Send Red
+
+    eof()  # End frame, ensuring the last pixels update properly
+
+    # Extra clock pulses to ensure all data is shifted out (APA102 requirement)
+    for i in range(NUM_PIXELS // 2):
+        pins.digital_write_pin(CLK, 1)
+        pins.digital_write_pin(CLK, 0)
 
 # Set the colour and brightness of an individual pixel
 def set_pix(x, rr, gg, bb, brightness=None):
@@ -131,10 +138,10 @@ while True:
 
     # set_all_rand()
     set_brightness_gradient()
-    basic.pause(10)
+    # basic.pause(10)
     show()
-    basic.pause(1500)
+    # basic.pause(1500)
     set_brightness_inv_gradient()
-    basic.pause(10)
+    # basic.pause(10)
     show()
-    basic.pause(1500)
+    # basic.pause(1500)
