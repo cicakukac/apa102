@@ -43,18 +43,34 @@ def clear():
         
 
 # Pulse a byte of data a bit at a time (optimized)
+# def write_byte(byte):
+#     for i in range(7, -1, -1):  # Send 8 bits, MSB first
+#         pins.digital_write_pin(DAT, (byte >> i) & 1)
+#         pins.digital_write_pin(CLK, 1)
+#         pins.digital_write_pin(CLK, 0)
+
 def write_byte(byte):
-    for i in range(7, -1, -1):  # Send 8 bits, MSB first
-        pins.digital_write_pin(DAT, (byte >> i) & 1)
+    for i in range(7, -1, -1):  # MSB first
+        if (byte >> i) & 1:
+            pins.digital_write_pin(DAT, 1)
+        else:
+            pins.digital_write_pin(DAT, 0)
+
         pins.digital_write_pin(CLK, 1)
         pins.digital_write_pin(CLK, 0)
 
 # Latch procedure - 36 clock pulses        
+# def eof():
+#     pins.digital_write_pin(DAT, 0)
+#     for x in range(36):
+#         pins.digital_write_pin(CLK,1)
+#         pins.digital_write_pin(CLK,0)
+
 def eof():
     pins.digital_write_pin(DAT, 0)
-    for x in range(36):
-        pins.digital_write_pin(CLK,1)
-        pins.digital_write_pin(CLK,0)
+    for _ in range(NUM_PIXELS // 16):  # Reduce unnecessary pulses
+        pins.digital_write_pin(CLK, 1)
+        pins.digital_write_pin(CLK, 0)
 
 # Latch at start - 32 clock pulses
 def sof():
@@ -81,6 +97,23 @@ def show():
     for i in range(NUM_PIXELS // 2):
         pins.digital_write_pin(CLK, 1)
         pins.digital_write_pin(CLK, 0)
+
+# def show():
+#     sof()  # Start frame
+
+#     for pixel in pixels:
+#         brightness = 0b11100000 | pixel[3]  # Brightness header
+#         data = [brightness, pixel[2], pixel[1], pixel[0]]  # [Brightness, B, G, R]
+
+#         # Write all 4 bytes in one loop (faster)
+#         for byte in data:
+#             for i in range(7, -1, -1):
+#                 pins.digital_write_pin(DAT, (byte >> i) & 1)
+#                 pins.digital_write_pin(CLK, 1)
+#                 pins.digital_write_pin(CLK, 0)
+
+#     eof()
+
 
 # Set the colour and brightness of an individual pixel
 def set_pix(x, rr, gg, bb, brightness=None):
@@ -136,12 +169,25 @@ while True:
     # show()
     # # basic.pause(1000)
 
-    # set_all_rand()
-    set_brightness_gradient()
-    # basic.pause(10)
+    # # set_all_rand()
+    # set_brightness_gradient()
+    # # basic.pause(10)
+    # show()
+    # # basic.pause(1500)
+    # set_brightness_inv_gradient()
+    # # basic.pause(10)
+    # show()
+    # # basic.pause(1500)
+
+    set_all_rand()
     show()
+
+    # set_all(255,255,255,0.2)
+    # show()
     # basic.pause(1500)
-    set_brightness_inv_gradient()
-    # basic.pause(10)
-    show()
+    # set_all(0,0,0,0.)
+    # show()
     # basic.pause(1500)
+    # set_all(0,255,0,1.)
+    # show()
+            

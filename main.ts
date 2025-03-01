@@ -49,19 +49,35 @@ function clear() {
 //          pins.digital_write_pin(CLK,1)
 //          pins.digital_write_pin(CLK,0)
 //  Pulse a byte of data a bit at a time (optimized)
+//  def write_byte(byte):
+//      for i in range(7, -1, -1):  # Send 8 bits, MSB first
+//          pins.digital_write_pin(DAT, (byte >> i) & 1)
+//          pins.digital_write_pin(CLK, 1)
+//          pins.digital_write_pin(CLK, 0)
 function write_byte(byte: number) {
     for (let i = 7; i > -1; i += -1) {
-        //  Send 8 bits, MSB first
-        pins.digitalWritePin(DAT, byte >> i & 1)
+        //  MSB first
+        if (byte >> i & 1) {
+            pins.digitalWritePin(DAT, 1)
+        } else {
+            pins.digitalWritePin(DAT, 0)
+        }
+        
         pins.digitalWritePin(CLK, 1)
         pins.digitalWritePin(CLK, 0)
     }
 }
 
 //  Latch procedure - 36 clock pulses        
+//  def eof():
+//      pins.digital_write_pin(DAT, 0)
+//      for x in range(36):
+//          pins.digital_write_pin(CLK,1)
+//          pins.digital_write_pin(CLK,0)
 function eof() {
     pins.digitalWritePin(DAT, 0)
-    for (let x = 0; x < 36; x++) {
+    for (let _ = 0; _ < Math.idiv(NUM_PIXELS, 16); _++) {
+        //  Reduce unnecessary pulses
         pins.digitalWritePin(CLK, 1)
         pins.digitalWritePin(CLK, 0)
     }
@@ -101,6 +117,18 @@ function show() {
     }
 }
 
+//  def show():
+//      sof()  # Start frame
+//      for pixel in pixels:
+//          brightness = 0b11100000 | pixel[3]  # Brightness header
+//          data = [brightness, pixel[2], pixel[1], pixel[0]]  # [Brightness, B, G, R]
+//          # Write all 4 bytes in one loop (faster)
+//          for byte in data:
+//              for i in range(7, -1, -1):
+//                  pins.digital_write_pin(DAT, (byte >> i) & 1)
+//                  pins.digital_write_pin(CLK, 1)
+//                  pins.digital_write_pin(CLK, 0)
+//      eof()
 //  Set the colour and brightness of an individual pixel
 function set_pix(x: number, rr: number, gg: number, bb: number, brightness: number = null) {
     if (brightness === null) {
@@ -165,12 +193,15 @@ while (true) {
     //  set_all(255,255,255,7)
     //  show()
     //  # basic.pause(1000)
-    //  set_all_rand()
-    set_brightness_gradient()
-    //  basic.pause(10)
-    show()
-    //  basic.pause(1500)
-    set_brightness_inv_gradient()
-    //  basic.pause(10)
+    //  # set_all_rand()
+    //  set_brightness_gradient()
+    //  # basic.pause(10)
+    //  show()
+    //  # basic.pause(1500)
+    //  set_brightness_inv_gradient()
+    //  # basic.pause(10)
+    //  show()
+    //  # basic.pause(1500)
+    set_all_rand()
     show()
 }
