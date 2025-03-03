@@ -1,5 +1,5 @@
+//% blockId=apa102p
 namespace apa102 {
-    //% blockId=apa102p
     export class p {
         private static defaultInstance: p; // Static instance for automatic usage
 
@@ -41,17 +41,22 @@ namespace apa102 {
             return this.defaultInstance;
         }
 
-        /**
-         * Plot a pixel at position X, Y
-         */
-        //% blockId=apa102plotat
-        //% block="plot at $x $y"
-        //% x.min=0 x.max=15
-        //% y.min=0 y.max=15
-        static plotAt(x: number, y: number): void {
-            let instance = this.getInstance(); // Get or create instance
-            console.log("NUM_PIXELS_X: " + instance.NUM_PIXELS_X);
-            led.plot(x, y)
+        /** Internal method for getting instance */
+        static instance(): p {
+            return this.getInstance();
         }
+    }
+
+    /**
+     * Plot a pixel at position X, Y (correctly inserts `apa102.plotAt(x, y)`)
+     */
+    //% blockId=apa102plotat
+    //% block="plot at $x $y"
+    //% x.min=0 x.max=15
+    //% y.min=0 y.max=15
+    export function plotAt(x: number, y: number): void {
+        let instance = p.instance(); // Get or create instance
+        console.log("NUM_PIXELS_X: " + instance.NUM_PIXELS_X);
+        led.plot(x, y);
     }
 }
