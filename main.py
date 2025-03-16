@@ -130,7 +130,7 @@ def set_all(r, g, b, brightness=None):
 
 def set_all_rand():
     for x in range(NUM_PIXELS):
-        set_pix(x, randint(0,255), randint(0,255), randint(0,255), randint(0,255))
+        set_pix(x, randint(0,255), randint(0,255), randint(0,255), randint(0,10)/20.0)
 
 def set_brightness_gradient():
     for y in range(16):
